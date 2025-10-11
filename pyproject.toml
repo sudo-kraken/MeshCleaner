@@ -1,0 +1,69 @@
+[project]
+name = "MeshCleaner"
+version = "0.1.0"
+description = "CLI to remove supports from pre-supported 3D meshes by selecting the primary component"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "trimesh>=3.23.5",
+    "numpy>=1.23",
+    "tqdm>=4.66.0",
+    "networkx>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.13.1",
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501", # line too long (handled by formatter)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+pythonpath = ["."]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=clean_mesh",
+    "--cov-report=term-missing",
+]
+
+[tool.coverage.run]
+source = ["clean_mesh"]
+omit = ["*/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
