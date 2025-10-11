@@ -43,7 +43,5 @@
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
   "remoteUser": "vscode",
-  "forwardPorts": [8000],
-  "postCreateCommand": "uv sync",
-  "postStartCommand": "printf \"\\nRun: uv run gunicorn -w 4 -b 0.0.0.0:8000 app:app\\n\""
+  "postCreateCommand": "uv sync --extra dev"
 }
