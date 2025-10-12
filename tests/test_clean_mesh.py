@@ -33,6 +33,7 @@ def example_stl_path():
 # Unit tests: pure logic
 # -----------------------
 
+
 def test_select_main_component_first():
     """Selecting 'first' returns the first component."""
     c1, c2 = MagicMock(area=10.0, volume=5.0), MagicMock(area=1.0, volume=0.1)
@@ -58,6 +59,7 @@ def test_select_main_component_ratio_handles_tiny_volume():
 # -----------------------------------
 # Unit tests: process_file with mocks
 # -----------------------------------
+
 
 def test_process_file_single_component(tmp_path):
     """When mesh has one component, it is exported as is."""
@@ -85,9 +87,10 @@ def test_process_file_multi_component_uses_selector(tmp_path):
     fake_mesh = MagicMock()
     fake_mesh.split.return_value = [comp1, comp2]
 
-    with patch("clean_mesh.trimesh.load", return_value=fake_mesh), patch(
-        "clean_mesh.select_main_component", return_value=comp2
-    ) as sel:
+    with (
+        patch("clean_mesh.trimesh.load", return_value=fake_mesh),
+        patch("clean_mesh.select_main_component", return_value=comp2) as sel,
+    ):
         ok = clean_mesh.process_file(in_file, out_file, method="ratio")
 
     assert ok is True
@@ -110,6 +113,7 @@ def test_process_file_catches_exception(tmp_path):
 # ---------------------------------------
 # Unit tests: process_directory and CLI
 # ---------------------------------------
+
 
 def test_process_directory_no_input(tmp_path):
     out_dir = tmp_path / "out"
@@ -182,6 +186,7 @@ def test_cli_main_exit_codes(tmp_in_out):
 # ---------------------------------------
 # Integration test using real test.stl
 # ---------------------------------------
+
 
 def test_integration_real_stl(example_stl_path, tmp_path):
     """

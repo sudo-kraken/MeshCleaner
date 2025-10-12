@@ -52,7 +52,9 @@ def select_main_component(components: Iterable[trimesh.Trimesh], method: str = "
         return components[0]
 
 
-def process_file(input_file: os.PathLike[str] | str, output_file: os.PathLike[str] | str, method: str = "first") -> bool:
+def process_file(
+    input_file: os.PathLike[str] | str, output_file: os.PathLike[str] | str, method: str = "first"
+) -> bool:
     """
     Process a single 3D file to remove support structures.
 
