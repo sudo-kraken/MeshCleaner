@@ -3,6 +3,9 @@ name = "MeshCleaner"
 version = "0.1.0"
 description = "CLI to remove supports from pre-supported 3D meshes by selecting the primary component"
 readme = "README.md"
+keywords = ["python", "selfhosted", "homelab", "automation", "devops", "infrastructure", "it", "itops", "sysadmin", "systemadministration", "orchestration", "configurationmanagement"]
+authors = [{ name = "Joe Harrison", email = "sudo-kraken@prxy.8shield.net" }]
+license = { file = "LICENSE" }
 requires-python = ">=3.9"
 dependencies = [
     "trimesh>=3.23.5",
