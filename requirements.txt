@@ -235,7 +235,7 @@ tqdm==4.67.1 \
     --hash=sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2 \
     --hash=sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2
     # via meshcleaner
-trimesh==4.8.3 \
-    --hash=sha256:d2a1974efccb0737a1faac14d69740c644bb6738a99c790c1df752fe72c2a759 \
-    --hash=sha256:f9f1622ecac5f3bed5b65d3a748bb536481f52cd4e4e120e0b637cabe6cf1542
+trimesh==4.9.0 \
+    --hash=sha256:934265a1de4b472bee21094c4e88d0a7522054b9911adb06e9b8062bb8757178 \
+    --hash=sha256:ad907a223867f614ef1598d85a4c978845f39365cb7ccc93fa5800901fba3ef9
     # via meshcleaner
