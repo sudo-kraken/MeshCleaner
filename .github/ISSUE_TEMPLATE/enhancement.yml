@@ -7,7 +7,7 @@ body:
       value: |
         Thanks for taking the time to fill out this feature request!
 
-        Please note that we use GitHub issues exclusively for bug reports and feature requests. For support requests, please use our other support channels to get help.
+        For installation or usage help, please use the support question form instead.
   - type: textarea
     id: description
     attributes:

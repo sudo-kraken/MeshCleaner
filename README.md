@@ -3,7 +3,7 @@
 
 ### MeshCleaner
 
-_A Python utility for removing support structures from 3D model files. It detects connected components in a mesh and keeps the primary model while discarding probable supports._
+_A Python utility that splits 3D meshes into connected components and keeps one component using a configurable heuristic._
 </div>
 
 <div align="center">
@@ -48,26 +48,29 @@ _A Python utility for removing support structures from 3D model files. It detect
 
 ## Overview
 
-MeshCleaner automatically separates likely support structures from the main model component in common mesh formats. It provides a simple command line interface, batch processing and a small Python library for embedding in other tools.
+MeshCleaner splits meshes into connected components, then retains one component using a configurable heuristic. It provides a simple command line interface, batch processing and a small Python library for embedding in other tools. The heuristics do not classify geometry, so review outputs when model topology is ambiguous.
 
 ## Architecture at a glance
 
 - Python package with console entry point `meshcleaner`
 - Component detection using `trimesh` connected components and `networkx` helpers
-- Two selection strategies:
-  - `first` selects the first (often largest or primary) component
-  - `ratio` selects the component with the lowest surface area to volume ratio
+- Three selection strategies:
+  - `largest` selects the component with the greatest surface area and is the default
+  - `first` selects the first component returned by Trimesh
+  - `ratio` selects the component with the lowest surface area to volume ratio, falling back to `largest` when ratios are undefined
 - Batch processing pipeline for directories
 - Designed to be installed and run via `uv` for reproducible environments
 
 ## Features
 
-- Automatically detects and separates the main model from support structures
+- Selects one connected component using a deterministic default heuristic
 - Multiple component selection methods:
-  - `first` select first component usually the model
-  - `ratio` select component with lowest surface area to volume ratio
+  - `largest` selects the component with the greatest surface area
+  - `first` selects the first component returned by Trimesh
+  - `ratio` selects the component with the lowest surface area to volume ratio, falling back to `largest` when ratios are undefined
 - Batch processing of multiple files
-- Supports STL, OBJ and PLY
+- Supports STL, OBJ and PLY with case-insensitive file extension matching
+- Stores material and texture assets for each OBJ in a model-specific directory
 - Ships as a CLI via `uv` with the `meshcleaner` entry point
 
 ## Prerequisites
@@ -98,13 +101,14 @@ This project is configured as a package, so the console script `meshcleaner` is 
 If you prefer `pip` and a traditional requirements file:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
+python -m pip install --no-deps .
 ```
 
-The `requirements.txt` can be generated from the lock when needed:
+The `requirements.txt` contains the locked runtime dependencies. It can be regenerated from the lock with:
 
 ```bash
-uv export --format requirements-txt --output requirements.txt
+uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file requirements.txt
 ```
 
 ## Usage
@@ -131,13 +135,13 @@ uv run python -m clean_mesh -i INPUT_DIR -o OUTPUT_DIR [options]
 
 - `-i, --input`    Input directory containing 3D model files. Required.
 - `-o, --output`   Output directory for processed files. Required.
-- `-m, --method`   Component selection method. One of `first` or `ratio`. Default is `first`.
+- `-m, --method`   Component selection method. One of `largest`, `first` or `ratio`. Default is `largest`.
 - `-f, --formats`  Comma separated list of file formats to process. Default is `stl`.
 - `-v, --verbose`  Enable verbose logging.
 
 ### Examples
 
-Process all STL files in a directory using default settings:
+Process all STL files in a directory, keeping the component with the greatest surface area:
 
 ```bash
 uv run meshcleaner -i "./models" -o "./cleaned"
@@ -160,14 +164,14 @@ from clean_mesh import process_file, process_directory, select_main_component
 process_file("input.stl", "output.stl", method="ratio")
 
 # Whole directory
-process_directory("input_dir", "output_dir", formats=["stl", "obj"], method="first", verbose=True)
+process_directory("input_dir", "output_dir", formats=["stl", "obj"], method="largest", verbose=True)
 ```
 
 ## Production notes
 
-- Use `ratio` when your model has large smooth surfaces compared to sparse supports. Use `first` when components are already ordered such that the model is first.
-- Keep backups of original files if running bulk operations. Write outputs to a separate directory using `-o`.
-- For very large meshes, ensure sufficient memory is available. Consider processing formats individually with `-f` to reduce peak usage.
+- Use `largest` for a deterministic area-based default, `ratio` when the model has large smooth surfaces compared to sparse supports, or `first` only when Trimesh is known to return the model first.
+- Input and output directories must not overlap, so source files and generated OBJ asset directories cannot overwrite one another.
+- Files are processed sequentially, but each mesh is loaded into memory; allow enough memory for the largest individual file.
 - Verbose mode `-v` helps diagnose component counts and selection decisions.
 
 ## Development
@@ -215,12 +219,12 @@ uv lock --upgrade-package trimesh
 ### Export pinned requirements
 
 ```bash
-uv export --format requirements-txt --output requirements.txt
+uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file requirements.txt
 ```
 
 ## GitHub Actions
 
-This repository includes a workflow that checks `uv.lock` freshness on Renovate pull requests. It validates that `uv.lock` is consistent with `pyproject.toml` and fails the PR if not.
+Pull requests verify formatting, linting, lock and requirements freshness, package builds, the installed CLI, and tests on every supported Python version.
 
 ## Troubleshooting
 
@@ -232,11 +236,11 @@ This repository includes a workflow that checks `uv.lock` freshness on Renovate 
 
 ## Licence
 
-This project is licensed under the MIT Licence. See the [LICENCE](LICENCE) file for details.
+This project is licensed under the MIT Licence. See the [LICENSE](LICENSE) file for details.
 
 ## Security
 
-If you discover a security issue, please review and follow the guidance in [SECURITY.md](SECURITY.md), or open a private security-focused issue with minimal details and request a secure contact channel.
+If you discover a security issue, follow [SECURITY.md](SECURITY.md) and submit it through GitHub's [private vulnerability reporting form](https://github.com/sudo-kraken/MeshCleaner/security/advisories/new). Do not open a public issue.
 
 ## Contributing
 
@@ -245,4 +249,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Support
 
-Open an [issue](/../../issues) with as much detail as possible, including your environment details and relevant logs or output.
+Follow [SUPPORT.md](SUPPORT.md) and choose the appropriate [issue form](https://github.com/sudo-kraken/MeshCleaner/issues/new/choose) for a bug, feature request or usage question.

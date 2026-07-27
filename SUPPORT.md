@@ -1,31 +1,19 @@
-# 🙋‍♂️ Support
+# Support
 
-This document explains where and how to get help with most of my projects.
-Please ensure you read through it thoroughly.
+Before participating, read and follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-> [!NOTE]
-> 👉 Before participating in the community, please read our
-> [Code of Conduct](CODE_OF_CONDUCT.md).
-> By interacting with this repository, organization, or community you agree to
-> abide by its terms.
+## Choose the right issue form
 
-## ❔ Asking quality questions
+- For reproducible defects, open a [bug report](https://github.com/sudo-kraken/MeshCleaner/issues/new?template=bug.yml).
+- For proposed improvements, open a [feature request](https://github.com/sudo-kraken/MeshCleaner/issues/new?template=enhancement.yml).
+- For installation or usage help, open a [support question](https://github.com/sudo-kraken/MeshCleaner/issues/new?template=question.yml).
 
-Help me help you! Spend time framing questions and add links and resources.
-Spending the extra time up front can help save everyone time in the long run.
-Here are some tips:
+Search existing issues before opening a new one. Include the MeshCleaner version,
+Python version, operating system, command used, relevant logs and a minimal sample
+that reproduces the problem when possible. Do not upload confidential or sensitive
+models.
 
-* Don't fall for the [XY problem](https://mywiki.wooledge.org/XyProblem).
-* Search to find out if a similar question has been asked or if a similar
-  issue/bug has been reported.
-* Try to define what you need help with:
-  * Is there something in particular you want to do?
-  * What problem are you encountering and what steps have you taken to try
-        and fix it?
-  * Is there a concept you don't understand?
-* Provide sample code, such as a a simple snippet, if
-  possible.
-* Screenshots can help, but if there's important text such as code or error
-  messages in them, please also provide those.
-* The more time you put into asking your question, the better I and others
-  can help you.
+## Security reports
+
+Do not use a public issue for a vulnerability. Follow [SECURITY.md](SECURITY.md)
+and use GitHub's [private vulnerability reporting form](https://github.com/sudo-kraken/MeshCleaner/security/advisories/new).

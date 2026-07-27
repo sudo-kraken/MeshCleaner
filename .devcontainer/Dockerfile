@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04@sha256:d94c97dd9cacf183d0
 ENV DEBIAN_FRONTEND=noninteractive
 ENV UV_INSTALL_DIR=/usr/local/bin
 
-ARG UV_VERSION=0.9.1
+ARG UV_VERSION=0.9.17
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates git jq \

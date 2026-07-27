@@ -1,11 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "MeshCleaner"
 version = "0.1.0"
-description = "CLI to remove supports from pre-supported 3D meshes by selecting the primary component"
+description = "CLI for retaining one connected component from each 3D mesh"
 readme = "README.md"
-keywords = ["python", "selfhosted", "homelab", "automation", "devops", "infrastructure", "it", "itops", "sysadmin", "systemadministration", "orchestration", "configurationmanagement"]
+keywords = ["3d-printing", "cli", "mesh", "stl", "trimesh"]
 authors = [{ name = "Joe Harrison", email = "sudo-kraken@prxy.8shield.net" }]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
 dependencies = [
     "trimesh>=3.23.5",
@@ -14,6 +19,9 @@ dependencies = [
     "networkx>=3.0",
 ]
 
+[project.scripts]
+meshcleaner = "clean_mesh:main"
+
 [project.optional-dependencies]
 dev = [
     "ruff>=0.13.1",
@@ -21,9 +29,12 @@ dev = [
     "pytest-cov>=6.0.0",
 ]
 
+[tool.setuptools]
+py-modules = ["clean_mesh"]
+
 [tool.ruff]
 line-length = 120
-target-version = "py313"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [
@@ -63,6 +74,7 @@ source = ["clean_mesh"]
 omit = ["*/tests/*"]
 
 [tool.coverage.report]
+fail_under = 90
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
