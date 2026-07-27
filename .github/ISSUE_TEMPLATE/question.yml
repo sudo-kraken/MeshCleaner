@@ -1,0 +1,43 @@
+name: Support question
+description: Ask for installation or usage help
+labels: ['question', 'awaiting triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for asking a question. Search existing issues first and do not attach sensitive models or data.
+  - type: input
+    id: version
+    attributes:
+      label: MeshCleaner version
+      description: Which release, tag or commit are you using?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include your Python version and operating system.
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Explain what you are trying to do, what you tried and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste relevant command output with secrets and private paths removed.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/sudo-kraken/MeshCleaner/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

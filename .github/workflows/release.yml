@@ -70,24 +70,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Create release archive
+      - name: Setup uv
+        uses: astral-sh/setup-uv@d31148d669074a8d0a63714ba94f3201e7020bc3 # v8.3.0
+
+      - name: Build release distributions
         run: |
-          mkdir -p release
-
-          # Create tar.gz with main script and essential files
-          tar -czf release/MeshCleaner-${VERSION}.tar.gz \
-            clean_mesh.py \
-            README.md \
-            LICENSE \
-            SECURITY.md \
-            SUPPORT.md \
-
-          # Create consolidated checksums.txt with sha256 lines for each tarball
+          uv build --out-dir release
           cd release
-          : > checksums.txt
-          for f in *.tar.gz; do
-            sha256sum "$f" >> checksums.txt
-          done
+          sha256sum *.whl *.tar.gz > checksums.txt
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -132,20 +122,22 @@ jobs:
 
       - name: Sign release artifacts
         run: |
-          cd release
-          cosign sign-blob \
-            --bundle MeshCleaner-${VERSION}.tar.gz.bundle \
-            MeshCleaner-${VERSION}.tar.gz
-            
-      - name: Create SBOM attestation for the archive
+          for artifact in release/*.whl release/*.tar.gz; do
+            cosign sign-blob \
+              --bundle "${artifact}.bundle" \
+              "${artifact}"
+          done
+
+      - name: Create SBOM attestation for the source distribution
         run: |
-          # Attach the SBOM to the tarball as an attestation bundle
+          SDIST=$(find release -maxdepth 1 -type f -name '*.tar.gz' -print -quit)
+          test -n "${SDIST}"
           cosign attest-blob -y \
             --type cyclonedx \
             --new-bundle-format \
             --predicate MeshCleaner-${{ env.VERSION }}.sbom \
             --bundle MeshCleaner-${{ env.VERSION }}.sbom.bundle \
-            release/MeshCleaner-${{ env.VERSION }}.tar.gz
+            "${SDIST}"
 
       - name: Upload signed artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -184,21 +176,25 @@ jobs:
 
       - name: Verify signatures
         run: |
-          cosign verify-blob \
-            --bundle signed/release/MeshCleaner-${VERSION}.tar.gz.bundle \
-            --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
-            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            release/MeshCleaner-${VERSION}.tar.gz
+          for artifact in release/*.whl release/*.tar.gz; do
+            cosign verify-blob \
+              --bundle "signed/${artifact}.bundle" \
+              --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
+              --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+              "${artifact}"
+          done
 
       - name: Verify SBOM attestation
         run: |
+          SDIST=$(find release -maxdepth 1 -type f -name '*.tar.gz' -print -quit)
+          test -n "${SDIST}"
           cosign verify-blob-attestation \
             --type cyclonedx \
             --new-bundle-format \
             --bundle signed/MeshCleaner-${VERSION}.sbom.bundle \
             --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            release/MeshCleaner-${VERSION}.tar.gz
+            "${SDIST}"
 
       - name: Verify checksums
         run: |
@@ -229,7 +225,7 @@ jobs:
       - name: Upload artifacts to release
         run: |
           gh release upload "${{ env.VERSION }}" release/* --repo "${{ github.repository }}"
-          gh release upload "${{ env.VERSION }}" signed/*.sbom signed/*.bundle --repo "${{ github.repository }}"
+          gh release upload "${{ env.VERSION }}" signed/*.sbom signed/*.bundle signed/release/*.bundle --repo "${{ github.repository }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

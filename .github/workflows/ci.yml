@@ -31,17 +31,31 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Check lock file
+        run: uv lock --check
+
       - name: Install the project
-        run: uv sync --all-extras
+        run: uv sync --locked --all-extras
 
       - name: Run ruff format
-        run: uv run ruff format --check .
+        run: uv run --locked ruff format --check .
 
       - name: Run ruff check
-        run: uv run ruff check .
+        run: uv run --locked ruff check .
 
-      - name: Run ruff uv lock check
-        run: uv lock --check
+      - name: Check requirements export
+        run: |
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt --output-file requirements.txt
+          git diff --exit-code -- requirements.txt
+
+      - name: Build package
+        run: uv build
+
+      - name: Smoke test built wheel
+        run: |
+          uv venv .wheel-venv
+          uv pip install --python .wheel-venv/bin/python dist/*.whl
+          .wheel-venv/bin/meshcleaner --help
 
   test:
     name: Test
@@ -70,7 +84,7 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install the project
-        run: uv sync --all-extras
+        run: uv sync --locked --all-extras --python "${{ matrix.python-version }}"
 
       - name: Run tests
-        run: uv run pytest --cov
+        run: uv run --locked --python "${{ matrix.python-version }}" pytest --cov
